@@ -14,27 +14,25 @@ function Reset({onResetClick}){
 }
 
 export default function Game() {
-  const [xIsNext, setXIsNext] = useState(true);
   const [histories, setHistories] = useState([Array(20).fill(null)]);
   const [currentMove, setCurrentMove] = useState(0);
+  const xIsNext = currentMove % 2 === 0;
   const currentSquares = histories[currentMove];
 
   function handlePlay(nextSquares) {
     const nextHistory = [...histories.slice(0, currentMove + 1), nextSquares];
     setHistories(nextHistory);
     setCurrentMove(nextHistory.length - 1);
-    setXIsNext(!xIsNext);
   }
 
   function handleReset() {
     setHistories([Array(20).fill(null)]);
     setCurrentMove(0);
-    setXIsNext(true);
+    xIsNext
   }
 
   function jumpTo(nextMove) {
     setCurrentMove(nextMove);
-    setXIsNext(nextMove % 2 === 0);
   }
 
   const moves = histories.map((squeares, move) => {
