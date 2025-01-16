@@ -6,16 +6,65 @@ function Squeare({value, onSqueareClick}) {
   return <button className="squeare" onClick={onSqueareClick}>{value}</button>
 }
 
-export default function Board() {
-  const [squeares, setSuqueares] = useState(Array(54).fill(null));
-  const [xIsNext, setXIsNext] = useState(true);
+function Reset({onResetClick}){
+  return(
+    <button className="reset" onClick={onResetClick}>reset</button>
+  )
 
+}
+
+export default function Game() {
+  const [xIsNext, setXIsNext] = useState(true);
+  const [histories, setHistories] = useState([Array(20).fill(null)]);
+  const [currentMove, setCurrentMove] = useState(0);
+  const currentSquares = histories[currentMove];
+
+  function handlePlay(nextSquares) {
+    const nextHistory = [...histories.slice(0, currentMove + 1), nextSquares];
+    setHistories(nextHistory);
+    setCurrentMove(nextHistory.length - 1);
+    setXIsNext(!xIsNext);
+  }
+
+  function handleReset() {
+    setHistories([Array(20).fill(null)]);
+    setCurrentMove(0);
+    setXIsNext(true);
+  }
+
+  function jumpTo(nextMove) {
+    setCurrentMove(nextMove);
+    setXIsNext(nextMove % 2 === 0);
+  }
+
+  const moves = histories.map((squeares, move) => {
+    let description = move > 0 ? `Go to move#${move}` : 'Go to start';
+
+    return(
+      <li key={move}>
+        <button onClick={() => jumpTo(move)}>{description}</button>
+      </li>
+    )
+  });
+
+  return(
+    <div className="game">
+      <div className="game-board">
+        <Board xIsNext={xIsNext} squeares={currentSquares} onPlay={handlePlay} onReset={handleReset} />
+      </div>
+      <div className="game-info">
+        <ol>{moves}</ol>
+      </div>
+    </div>
+  );
+}
+
+function Board({xIsNext, squeares, onPlay, onReset}) {
   function handleClick(i) {
     if(squeares[i] || calculateWinner(squeares))return;
     const nextSqueare = squeares.slice();
     nextSqueare[i] = xIsNext ? "X" : "O";
-    setSuqueares(nextSqueare);
-    setXIsNext(!xIsNext);
+    onPlay(nextSqueare);
   }
 
   const winner = calculateWinner(squeares);
@@ -50,6 +99,9 @@ export default function Board() {
       <Squeare value={squeares[17]} onSqueareClick={() => handleClick(17)}/>
       <Squeare value={squeares[18]} onSqueareClick={() => handleClick(18)}/>
       <Squeare value={squeares[19]} onSqueareClick={() => handleClick(19)}/>
+    </div>
+    <div>
+      <Reset onResetClick={onReset}/>
     </div>
     </>
   )

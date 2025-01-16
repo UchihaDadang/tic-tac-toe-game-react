@@ -24,3 +24,12 @@ body {
   width: 140px;
   
 }
+
+.reset {
+  margin-top: 10px;
+  margin-left: 35px;
+}
+
+.game {
+  display: flex;
+}
